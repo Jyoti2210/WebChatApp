@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title> Chat App </title>
+		<link rel="stylesheet" href = "./main.css" >
+	</head>
+	<body>
+		<div class = "chat">
+			<input type = "text" class = "chat-name" placeholder="Enter your name">
+			<div class = "chat-messages">
+				<div class = "chat-message"> </div>				
+			</div>
+			<textarea placeholder="Type your message here"></textarea>
+			<input type="button" value="Send" onclick="emitMsg()"/>
+		</div>
+
+		<script src = "/socket.io/socket.io.js"></script>
+
+		<script>
+			var socket;
+			var getNode = function(s){
+				return document.querySelector(s);
+			};
+			(function() {
+				
+
+				textarea = getNode('.chat textarea');
+				chatName = getNode('.chat-name');
+				messages = getNode('.chat-message');
+
+				socket = io.connect('http://localhost:3000');
+				//console.log("socket" + io.connect);
+
+				if(socket !== undefined) {
+
+					socket.on('output', function(data) {
+						if(data.length) {
+							for( var x = 0; x < data.length; x++) {
+									var message = document.createElement('div');
+									message.setAttribute('class','chat-message');
+									message.textContent = data[x].name + " : " + data[x].message;
+
+									messages.appendChild(message);
+									//messages.insertBefore(message, messages.firstChild);
+							}
+						}
+					});
+
+					textarea.addEventListener('keydown', function(event) {
+						var self = this;
+						var name = chatName.value;
+
+						if(event.which == 13 && event.shiftKey === false) {
+							// socket.emit('input', {
+							// 	name: name,
+							// 	message: self.value
+							// });
+							// textarea.value = '';
+							emitMsg();
+						}
+					});
+				} else {
+					console.log("socket is undefined")
+				}
+
+			})();
+
+			function emitMsg() {
+				var textarea = getNode('.chat textarea');
+				var name = getNode('.chat-name').value;
+				console.log(name, textarea.value);
+				socket.emit('input', {
+					name: name,
+					message: textarea.value
+				});
+				textarea.value = '';
+			}
+		</script>
+	</body>
+
+
+</html>
