@@ -1,5 +1,6 @@
 # WebChatApp
-WebChatApplication using NodeJS and MongoDB
+
+BACKGROUND:
 
 This is an end to end web chat application which allows multiple users to simultaneously chat with each other. This communication is established using socket.io library.
 
